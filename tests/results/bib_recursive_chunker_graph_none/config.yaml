@@ -1,0 +1,16 @@
+bibliography_filter:
+  similarity_threshold: 0.85
+  enabled: true
+changes: "Bibliography/reference-list chunks now filtered out before retrieval. Graph-expanded retrieval, no reranker."
+chunking_strategy:
+  description: Recursively tries to split by different characters to find one that
+    works.
+  name: recursive_chunker
+name: "Graph-expanded retrieval, no reranker"
+reranking_strategy:
+  description: ''
+  name: none
+retrieval_strategy:
+  description: ''
+  name: graph
+timestamp: 2026-08-13 11:30:05.000000+00:00

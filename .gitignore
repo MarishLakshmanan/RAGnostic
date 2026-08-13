@@ -15,7 +15,6 @@ wheels/
 eval/testset.jsonl
 eval/single_hop_samples.jsonl
 eval/multi_hop_samples.jsonl
-tests/results/
 
 # Build artifacts
 store/bm25_index/

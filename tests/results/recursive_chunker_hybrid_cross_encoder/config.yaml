@@ -1,0 +1,16 @@
+bibliography_filter:
+  similarity_threshold: 0.85
+  enabled: false
+changes: test with recall
+chunking_strategy:
+  description: Recursively tries to split by different characters to find one that
+    works.
+  name: recursive_chunker
+name: test
+reranking_strategy:
+  description: ''
+  name: cross_encoder
+retrieval_strategy:
+  description: ''
+  name: hybrid
+timestamp: 2026-08-12 22:05:36.780823+00:00

@@ -1,0 +1,16 @@
+bibliography_filter:
+  similarity_threshold: 0.85
+  enabled: true
+changes: "Bibliography/reference-list chunks now filtered out before retrieval."
+chunking_strategy:
+  description: Recursively tries to split by different characters to find one that
+    works.
+  name: recursive_chunker
+name: "Hybrid retrieval, no reranker"
+reranking_strategy:
+  description: ''
+  name: none
+retrieval_strategy:
+  description: ''
+  name: hybrid
+timestamp: 2026-08-13 09:15:22.000000+00:00
