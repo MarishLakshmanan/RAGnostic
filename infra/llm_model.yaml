@@ -1,0 +1,32 @@
+services:
+  vllm:
+    image: vllm/vllm-openai:latest
+    container_name: vllm-qwen3-4b
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - huggingface-cache:/root/.cache/huggingface
+    environment:
+      # If the model requires a Hugging Face token (gated models), uncomment and set it:
+      # - HUGGING_FACE_HUB_TOKEN=your_hf_token_here
+      - NVIDIA_VISIBLE_DEVICES=all
+      # V2 model runner needs UVA, which isn't supported through WSL2 GPU passthrough yet.
+      # Force the older V1 runner instead:
+      - VLLM_USE_V2_MODEL_RUNNER=0
+    ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    command: >
+      --model Qwen/Qwen3-4B-AWQ
+      --gpu-memory-utilization 0.90
+      --max-model-len 8192
+      --quantization awq
+
+volumes:
+  huggingface-cache:

@@ -1,0 +1,11 @@
+services:
+  reranker:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-latest
+    volumes:
+      - cross_encoder:/data
+    ports:
+      - "7000:80"
+    command: --model-id BAAI/bge-reranker-large
+    restart: unless-stopped
+volumes:
+  cross_encoder:

@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Results - RAGnostic{% endblock %}
+
+{% block content %}
+<h1>Results</h1>
+
+{% for result in results %}
+<details class="result">
+  <summary>
+    <span class="result-name">{{ result.name }}</span>
+    <span class="summary-badges">
+      {% for key, value in result.config.items() %}
+        {% if value.name %}
+        <span class="pill">{{ value.name }}</span>
+        {% endif %}
+      {% endfor %}
+      {% if result.timestamp %}
+      <span class="timestamp">{{ result.timestamp }}</span>
+      {% endif %}
+    </span>
+  </summary>
+
+  <div class="result-body">
+    <div class="config-grid">
+      {% if result.changes %}
+      <div class="config-card config-card-changes">
+        <div class="label">Changes</div>
+        <div class="desc">{{ result.changes }}</div>
+      </div>
+      {% endif %}
+      {% for key, value in result.config.items() %}
+        <div class="config-card">
+          <div class="label">{{ key | replace("_", " ") | title }}</div>
+          {% if value.name %}
+          <span class="pill">{{ value.name }}</span>
+          {% endif %}
+          {% if key == "bibliography_filter" %}
+          <span class="badge" data-tier="{{ 'good' if value.get('enabled', true) else 'poor' }}">{{ "Bib filter enabled" if value.get("enabled", true) else "Bib filter disabled" }}</span>
+          {% endif %}
+          {% if value.description %}
+          <div class="desc">{{ value.description }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    {% for table in result.tables %}
+    <details class="table-section">
+      <summary>
+        <span class="table-filename">{{ table.filename }}</span>
+        <span class="row-count">{{ table.row_count }} rows</span>
+        <span class="table-summary-scores">
+          {% for score in table.mean_scores %}
+          <span class="badge badge-mean" data-tier="{{ score.tier }}" title="Mean {{ score.name | lower | replace('avg ', '') }} across {{ table.row_count }} rows">
+            <span class="badge-label">{{ score.name }}</span>
+            {{ "%.2f" | format(score.mean) if score.mean is not none else "n/a" }}
+          </span>
+          {% endfor %}
+        </span>
+      </summary>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              {% for col in table.columns %}
+              <th>{{ col | replace("_", " ") }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in table.rows %}
+            <tr class="row-clickable" data-row='{{ row | tojson }}'>
+              {% for col in table.columns %}
+              {% if col == "retrieved_contexts" %}
+              <td class="contexts-cell">
+                <ol class="contexts-preview">
+                  {% for excerpt in row[col][:2] %}
+                  <li><div class="excerpt">{{ excerpt }}</div></li>
+                  {% endfor %}
+                </ol>
+                {% if row[col] | length > 2 %}
+                <div class="contexts-more">+{{ row[col] | length - 2 }} more in details</div>
+                {% endif %}
+              </td>
+              {% elif col in ("faithfulness", "answer_relevancy", "recall") %}
+              <td class="score-cell">
+                <span class="badge" data-tier="{{ row.score_tiers[col] }}">
+                  {{ "%.2f" | format(row[col]) if row[col] is not none else "n/a" }}
+                </span>
+              </td>
+              {% else %}
+              <td class="text-cell"><div class="clamp">{{ row[col] }}</div></td>
+              {% endif %}
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </details>
+    {% endfor %}
+  </div>
+</details>
+{% endfor %}
+
+<div id="detail-backdrop" class="detail-backdrop"></div>
+<aside id="detail-panel" class="detail-panel">
+  <button id="detail-close" class="detail-close" aria-label="Close">&times;</button>
+  <div class="detail-scores" id="detail-scores"></div>
+  <h3>User Input</h3>
+  <div id="detail-user-input" class="detail-block"></div>
+  <h3>Retrieved Contexts</h3>
+  <ol id="detail-contexts" class="excerpt-list"></ol>
+  <h3>Response</h3>
+  <div id="detail-response" class="detail-block"></div>
+  <h3>Reference</h3>
+  <div id="detail-reference" class="detail-block"></div>
+</aside>
+
+<script>
+(function () {
+  var panel = document.getElementById("detail-panel");
+  var backdrop = document.getElementById("detail-backdrop");
+  var closeBtn = document.getElementById("detail-close");
+  var scoreLabels = { faithfulness: "Faithfulness", answer_relevancy: "Answer Relevancy", recall: "Recall" };
+
+  function setText(id, value) {
+    document.getElementById(id).textContent = value == null ? "" : value;
+  }
+
+  function openDetail(row) {
+    setText("detail-user-input", row.user_input);
+    setText("detail-response", row.response);
+    setText("detail-reference", row.reference);
+
+    var contexts = document.getElementById("detail-contexts");
+    contexts.innerHTML = "";
+    (row.retrieved_contexts || []).forEach(function (excerpt) {
+      var li = document.createElement("li");
+      var div = document.createElement("div");
+      div.className = "excerpt";
+      div.textContent = excerpt;
+      li.appendChild(div);
+      contexts.appendChild(li);
+    });
+
+    var scores = document.getElementById("detail-scores");
+    scores.innerHTML = "";
+    Object.keys(scoreLabels).forEach(function (key) {
+      if (!(key in row)) return;
+      var value = row[key];
+      var tier = row.score_tiers ? row.score_tiers[key] : "unknown";
+      var span = document.createElement("span");
+      span.className = "badge";
+      span.dataset.tier = tier;
+      span.textContent = scoreLabels[key] + ": " + (value == null ? "n/a" : value.toFixed(2));
+      scores.appendChild(span);
+    });
+
+    panel.classList.add("open");
+    backdrop.classList.add("open");
+  }
+
+  function closeDetail() {
+    panel.classList.remove("open");
+    backdrop.classList.remove("open");
+  }
+
+  document.querySelectorAll("tr.row-clickable").forEach(function (tr) {
+    tr.addEventListener("click", function () {
+      openDetail(JSON.parse(tr.dataset.row));
+    });
+  });
+
+  closeBtn.addEventListener("click", closeDetail);
+  backdrop.addEventListener("click", closeDetail);
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") closeDetail();
+  });
+})();
+</script>
+{% endblock %}

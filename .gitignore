@@ -1,0 +1,31 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.env
+
+# Test artifacts
+.pytest_cache/
+eval/testset.jsonl
+eval/single_hop_samples.jsonl
+eval/multi_hop_samples.jsonl
+tests/results/
+
+# Build artifacts
+store/bm25_index/
+tests/datasets/
+corpus/papers.json
+
+# Local Claude Code settings
+.claude/settings.local.json
+
+# Scratchpads
+notebook.ipynb
+plan.md
+example.pdf

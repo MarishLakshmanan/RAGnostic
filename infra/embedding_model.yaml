@@ -1,0 +1,18 @@
+services:
+  bge-m3:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-latest
+    container_name: bge-m3-embeddings
+    ports:
+      - "3838:80"
+    volumes:
+      - model:/data
+    command: --model-id BAAI/bge-base-en-v1.5
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "2"
+    #       memory: 4g
+    restart: unless-stopped
+
+volumes:
+  model:

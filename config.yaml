@@ -1,0 +1,12 @@
+config:
+  chunking_strategy:
+    name: "recursive_chunker"
+    description: "Recursively tries to split by different characters to find one that works."
+  retrieval_strategy:
+    name: "hybrid" # can be graph, dense, or hybrid
+    description: ""
+  reranking_strategy:
+    name: "cross_encoder" # can be cross_encoder or none
+    description: ""
+  bibliography_filter:
+    similarity_threshold: 0.85

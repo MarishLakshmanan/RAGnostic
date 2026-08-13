@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -sS -o /tmp/p1.json -w \"HTTP:%{http_code}\\\\n\" \"https://api.semanticscholar.org/graph/v1/paper/DOI:10.18653/v1/N19-1423?fields=title,year,authors,abstract\")",
+      "Read(//tmp/**)",
+      "Bash(curl -sS -o /tmp/p2.json -w \"HTTP:%{http_code}\\\\n\" \"https://api.semanticscholar.org/graph/v1/paper/search?query=BERT&limit=2&fields=title,year\")",
+      "Bash(curl -sS -o /tmp/p4.json -w \"HTTP:%{http_code}\\\\n\" \"https://api.semanticscholar.org/graph/v1/paper/search?query=BERT&limit=2&fields=title,year\")",
+      "Bash(curl -sS -o /tmp/bulk.json -w \"HTTP:%{http_code}\\\\n\" \"https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=retrieval+augmented+generation&fields=title,year&limit=3\")",
+      "Bash(ls -la ~/.claude/ 2>&1 | head -20; echo \"---\"; echo $HOME)",
+      "Read(//c/Users/sakth/.claude/**)",
+      "Bash(mkdir -p ~/.claude/rules && test -f ~/.claude/rules/format.md && echo EXISTS || echo NOT_FOUND)",
+      "Bash(uv run python -c ' *)",
+      "Bash(uv run *)",
+      "Bash(mkdir -p \"d:/Projects/RAG-eval/.claude/skills/ragas/references\" && ls -la \"d:/Projects/RAG-eval/.claude/skills/\")"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\sakth\\.claude",
+      "d:\\Projects\\RAG-eval\\.claude\\skills\\ragas"
+    ]
+  }
+}
