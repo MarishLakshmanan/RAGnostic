@@ -1,0 +1,16 @@
+bibliography_filter:
+  similarity_threshold: 0.85
+  enabled: true
+changes: "Adds cross-encoder reranking on top of graph-expanded retrieval. Improves faithfulness and relevancy over graph alone, though recall is still capped by the chunk-level-only graph structure."
+chunking_strategy:
+  description: Recursively tries to split by different characters to find one that
+    works.
+  name: recursive_chunker
+name: "Graph-expanded retrieval + cross-encoder reranker"
+reranking_strategy:
+  description: ''
+  name: cross_encoder
+retrieval_strategy:
+  description: ''
+  name: graph
+timestamp: 2026-08-13 12:15:00.000000+00:00
