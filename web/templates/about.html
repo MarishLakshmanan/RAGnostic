@@ -7,7 +7,7 @@
 
 <p class="about-lede">
   RAGnostic is an eval harness for comparing RAG retrieval strategies over a self-fetched corpus of
-  LLM/agent-security arXiv papers. The name's no accident — we built it to stay <strong>agnostic</strong>
+  LLM/agent-security arXiv papers. The name's no accident, I built it to stay <strong>agnostic</strong>
   about which retrieval setup wins and measure that instead of guessing: dense vs. graph vs. hybrid, with
   and without a <span class="pill-inline">cross-encoder</span> reranker, scored with
   <span class="pill-inline">RAGAS</span> on real questions generated straight from the corpus.
@@ -16,32 +16,32 @@
 <p><a class="btn" href="results.html">View the results →</a></p>
 
 <section class="about-section">
-  <h2>How we build the corpus</h2>
-  <p>The repo is split by pipeline stage, and each stage is a checkpoint — so re-running any of this is a safe, deduplicated no-op rather than starting over.</p>
+  <h2>How I build the corpus</h2>
+  <p>The repo is split by pipeline stage, and each stage is a checkpoint, so re-running any of this is a safe, deduplicated no-op rather than starting over.</p>
   <ol>
-    <li>First we fetch papers from <span class="pill-inline">arXiv</span>, downloading the PDF for each one.</li>
-    <li>Then we filter the bibliography out of each document. We embed the reference-list text and the candidate chunks with an embedding model, and drop anything whose <span class="pill-inline">max() cosine similarity</span> to a citation crosses a threshold — max, not average, since a chunk only needs to closely resemble one citation to be reference-list noise.</li>
-    <li>Then we chunk what's left using a <span class="pill-inline">recursive text splitter</span>, so chunks carry overlapping context instead of getting cut off at arbitrary boundaries.</li>
-    <li>Then we embed the chunks and push the vectors into <span class="pill-inline">ChromaDB</span>.</li>
-    <li>Then we build a <span class="pill-inline">knowledge graph</span> on top: for every embedded chunk, we query Chroma for its nearest neighbors and store those as edges in Postgres. That's what lets Graph RAG expand outward from a matched chunk to its related chunks — across papers, not just within one.</li>
+    <li>First I fetch papers from <span class="pill-inline">arXiv</span>, downloading the PDF for each one.</li>
+    <li>Then I filter the bibliography out of each document. I embed the reference-list text and the candidate chunks with an embedding model, and drop anything whose <span class="pill-inline">max() cosine similarity</span> to a citation crosses a threshold, max, not average, since a chunk only needs to closely resemble one citation to be reference-list noise.</li>
+    <li>Then I chunk what's left using a <span class="pill-inline">recursive text splitter</span>, so chunks carry overlapping context instead of getting cut off at arbitrary boundaries.</li>
+    <li>Then I embed the chunks and push the vectors into <span class="pill-inline">ChromaDB</span>.</li>
+    <li>Then I build a <span class="pill-inline">knowledge graph</span> on top: for every embedded chunk, I query Chroma for its nearest neighbors and store those as edges in Postgres. That's what lets Graph RAG expand outward from a matched chunk to its related chunks, across papers, not just within one.</li>
   </ol>
 </section>
 
 <section class="about-section">
-  <h2>How we retrieve and rerank</h2>
-  <p>At query time, RAGnostic can answer using whichever retrieval strategy is configured:</p>
+  <h2>How I retrieve and rerank</h2>
+  <p>At query time, RAGnostic can ansIr using whichever retrieval strategy is configured:</p>
   <ol>
-    <li><strong>Dense</strong> — plain nearest-neighbor search over Chroma.</li>
-    <li><strong>Graph</strong> — dense search for the best match, then expand into its neighbors via the knowledge graph above.</li>
-    <li><strong>Hybrid</strong> — dense search plus a <span class="pill-inline">BM25</span> sparse search, merged with <span class="pill-inline">reciprocal rank fusion (RRF)</span> so chunks that rank well in either search count for more.</li>
+    <li><strong>Dense</strong>, plain nearest-neighbor search over Chroma.</li>
+    <li><strong>Graph</strong>, dense search for the best match, then expand into its neighbors via the knowledge graph above.</li>
+    <li><strong>Hybrid</strong>, dense search plus a <span class="pill-inline">BM25</span> sparse search, merged with <span class="pill-inline">reciprocal rank fusion (RRF)</span> so chunks that rank Ill in either search count for more.</li>
   </ol>
-  <p>On top of any of these, a <span class="pill-inline">cross-encoder</span> reranker can re-score the retrieved chunks against the query directly, rather than relying on embedding similarity alone — it's slower, but it looks at the query and each chunk together instead of comparing precomputed vectors.</p>
+  <p>On top of any of these, a <span class="pill-inline">cross-encoder</span> reranker can re-score the retrieved chunks against the query directly, rather than relying on embedding similarity alone, it's slower, but it looks at the query and each chunk together instead of comparing precomputed vectors.</p>
 </section>
 
 <section class="about-section">
   <h2>Everything runs locally</h2>
   <div class="about-note">
-    No external API calls, no API keys. Every model is open-weight and served from Docker on our own machine: the LLM runs on <span class="pill-inline">vLLM</span>, and the embedding model plus the cross-encoder reranker both run on Hugging Face's <span class="pill-inline">TEI</span> (Text Embeddings Inference).
+    No external API calls, no API keys. Every model is open-Iight and served from Docker on our own machine: the LLM runs on <span class="pill-inline">vLLM</span>, and the embedding model plus the cross-encoder reranker both run on Hugging Face's <span class="pill-inline">TEI</span> (Text Embeddings Inference).
   </div>
 </section>
 

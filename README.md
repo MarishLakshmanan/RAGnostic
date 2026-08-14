@@ -4,7 +4,7 @@ An eval harness for comparing RAG retrieval strategies dense, graph, and hybrid,
 
 The repo is split by pipeline stage, where each step acts as a checkpoint: state (Postgres rows, Chroma vectors, on-disk indexes) is upserted and marked as it's produced, so re-running any stage is a safe, deduplicated no-op rather than a redo from scratch.
 
-**Everything runs locally.** No external API calls, no API keys. The LLM is served by vLLM, and both the embedding model and the cross-encoder reranker are served by Hugging Face's Text Embeddings Inference (TEI) — all three as Docker containers defined in `infra/`.
+**Everything runs locally.** No external API calls, no API keys. The LLM is served by vLLM, and both the embedding model and the cross-encoder reranker are served by Hugging Face's Text Embeddings Inference (TEI), all three as Docker containers defined in `infra/`.
 
 ## Project Structure
 
@@ -36,7 +36,7 @@ Then we chunk them using `uv run python -m chunking.parser`. This filters the bi
 
 Then we embed the chunks using `uv run python -m embed.embed`. This updates Postgres to mark that the chunk's been embedded (so we don't redo it) and pushes the vector into ChromaDB.
 
-Optionally, we can also run `uv run python -m embed.build_bm25_index` to build an index for BM25 — needed for the `hybrid` retrieval strategy, which merges dense and BM25 results with reciprocal rank fusion (RRF).
+Optionally, we can also run `uv run python -m embed.build_bm25_index` to build an index for BM25, needed for the `hybrid` retrieval strategy, which merges dense and BM25 results with reciprocal rank fusion (RRF).
 
 ## Configuration
 
@@ -63,8 +63,8 @@ Each test scores answers on faithfulness, answer relevancy, and a paper-level re
 
 You can view them in your browser by running `uv run python -m web.build`. This builds a static html site using jinja2 templates.
 
-You can check out my tests and results here: [link to be added]
+You can check out my tests and results here: [Results](https://marishlakshmanan.github.io/RAGnostic/)
 
 ## Status
 
-Dense, graph, and hybrid retrieval are implemented and swappable via `config.yaml`. Cross-encoder reranking has infra and config support but isn't yet wired into `main.py`'s retrieval path. Chunking currently has one strategy (`recursive_chunker`), designed to be swappable without touching the rest of the pipeline.
+Dense, graph, and hybrid retrieval along with cross encoder are implemented and swappable via `config.yaml`. Chunking currently has one strategy (`recursive_chunker`), designed to be swappable without touching the rest of the pipeline.
